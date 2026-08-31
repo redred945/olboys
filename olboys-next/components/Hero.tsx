@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 
 const LIEN_ADHESION =
   "https://www.helloasso.com/associations/olboys-supporters-de-l-orleans-loiret-basket/adhesions/adhesion-olboys-saison-2026-2027";
@@ -13,9 +13,9 @@ const B = ["#####..", "##..##.", "##..##.", "#####..", "#####..", "##..##.", "##
 const MARGE_X = 5;
 const MARGE_Y = 3;
 
-type Carton = { id: number; classe: string; retard: number };
+type Carton = { id: number; classe: string; style: CSSProperties };
 
-function construireTifo(): { cols: number; lignes: number; cartons: Carton[] } {
+function construireTifo(): { cols: number; cartons: Carton[] } {
   const mot: string[] = [];
   for (let r = 0; r < 9; r++) mot.push(O[r] + "." + L[r] + "." + B[r]);
 
@@ -29,86 +29,52 @@ function construireTifo(): { cols: number; lignes: number; cartons: Carton[] } {
       const dansLeMot =
         y >= MARGE_Y && y < MARGE_Y + mot.length && x >= MARGE_X && x < MARGE_X + mot[0].length && mot[y - MARGE_Y][x - MARGE_X] === "#";
       const absent = !dansLeMot && Math.random() < 0.22;
+
+      // Toute l'animation est portée par le CSS : on ne fait que semer ici
+      // le retard de levée et, pour les lettres, la phase du scintillement.
+      // Une seule passe de rendu React, quelle que soit la taille du mur.
+      const style: Record<string, string> = {
+        "--retard": `${Math.round(y * 26 + x * 14 + Math.random() * 180)}ms`,
+      };
+      if (dansLeMot) {
+        // Décalage et durée propres à chaque carton : les lettres scintillent
+        // sans jamais retomber sur un motif régulier. Le départ attend que la
+        // vague de levée soit passée.
+        style["--sc-retard"] = `${Math.round(1400 + Math.random() * 4400)}ms`;
+        style["--sc-duree"] = `${Math.round(2600 + Math.random() * 3000)}ms`;
+      }
+
       cartons.push({
         id: id++,
         classe: dansLeMot ? "on" : absent ? "vide" : "",
-        retard: y * 26 + x * 14 + Math.random() * 180,
+        style: style as CSSProperties,
       });
     }
   }
-  return { cols, lignes, cartons };
+  return { cols, cartons };
 }
 
 export default function Hero() {
   // Le motif utilise Math.random() : on ne le construit qu'après le montage,
   // côté client, pour ne jamais désaccorder le rendu serveur et l'hydratation.
-  const [tifo, setTifo] = useState<{ cols: number; lignes: number; cartons: Carton[] } | null>(null);
-  const [leves, setLeves] = useState<Set<number>>(new Set());
-  const [eclats, setEclats] = useState<Set<number>>(new Set());
+  const [tifo, setTifo] = useState<{ cols: number; cartons: Carton[] } | null>(null);
+  const [leve, setLeve] = useState(false);
   const zoneRef = useRef<HTMLDivElement>(null);
   const calmeRef = useRef(false);
 
-  const lancer = (cartons: Carton[]) => {
-    if (calmeRef.current) {
-      setLeves(new Set(cartons.map((c) => c.id)));
-      return;
-    }
-    setLeves(new Set());
-    cartons.forEach((c) => {
-      window.setTimeout(() => {
-        setLeves((prec) => new Set(prec).add(c.id));
-      }, c.retard);
-    });
-  };
-
   useEffect(() => {
     calmeRef.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const construit = construireTifo();
-    setTifo(construit);
-    const t = window.setTimeout(() => lancer(construit.cartons), 250);
+    setTifo(construireTifo());
+    const t = window.setTimeout(() => setLeve(true), 250);
     return () => window.clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Relance : on repose les cartons, puis on les relève à la frame suivante
+  // pour que les transitions CSS repartent bien de zéro.
   const rejouer = () => {
-    if (tifo) lancer(tifo.cartons);
+    setLeve(false);
+    requestAnimationFrame(() => requestAnimationFrame(() => setLeve(true)));
   };
-
-  // Scintillement aléatoire : des cartons s'embrasent par salves, comme des
-  // flashs de portables qui parcourent la tribune. Coupé si l'utilisateur
-  // demande moins d'animations.
-  useEffect(() => {
-    if (!tifo || calmeRef.current) return;
-    const allumes = tifo.cartons.filter((c) => c.classe !== "vide");
-    const lettres = tifo.cartons.filter((c) => c.classe === "on");
-    if (!allumes.length) return;
-
-    const salve = () => {
-      const nb = 4 + Math.floor(Math.random() * 7);
-      const choisis: number[] = [];
-      for (let i = 0; i < nb; i++) {
-        const bassin = Math.random() < 0.62 && lettres.length ? lettres : allumes;
-        const c = bassin[Math.floor(Math.random() * bassin.length)];
-        if (c) choisis.push(c.id);
-      }
-      setEclats((prec) => {
-        const s = new Set(prec);
-        choisis.forEach((id) => s.add(id));
-        return s;
-      });
-      window.setTimeout(() => {
-        setEclats((prec) => {
-          const s = new Set(prec);
-          choisis.forEach((id) => s.delete(id));
-          return s;
-        });
-      }, 540);
-    };
-
-    const boucle = window.setInterval(salve, 230);
-    return () => window.clearInterval(boucle);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tifo]);
 
   // Innovation : la tribune suit le curseur, effet caméra de stade
   function surMouvement(e: React.PointerEvent<HTMLElement>) {
@@ -131,14 +97,12 @@ export default function Hero() {
     <section className="heros" onPointerMove={surMouvement} onPointerLeave={surSortie}>
       <div className="tifo-zone" ref={zoneRef} aria-hidden="true">
         {tifo && (
-          <div className="tifo" style={{ gridTemplateColumns: `repeat(${tifo.cols}, 1fr)` }}>
+          <div
+            className={`tifo ${leve ? "leve" : ""}`}
+            style={{ gridTemplateColumns: `repeat(${tifo.cols}, 1fr)` }}
+          >
             {tifo.cartons.map((c) => (
-              <b
-                key={c.id}
-                className={[c.classe, leves.has(c.id) && "lev", eclats.has(c.id) && "eclat"]
-                  .filter(Boolean)
-                  .join(" ")}
-              />
+              <b key={c.id} className={c.classe} style={c.style} />
             ))}
           </div>
         )}
