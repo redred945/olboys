@@ -7,22 +7,7 @@ export default function Adhesion() {
   return (
     <section className="sec" id="adhesion">
       <div className="env">
-        <div className="tete">
-          <div>
-            <Reveal as="p" className="eti">
-              Saison 2026-2027
-            </Reveal>
-            <Reveal as="h2" className="t-xl" delay={80} style={{ marginTop: 20 }}>
-              Les adhésions sont ouvertes.
-            </Reveal>
-          </div>
-          <Reveal as="p" delay={160}>
-            L&apos;adhésion se fait en ligne sur HelloAsso, en deux minutes. Tu reçois ensuite un mail de bienvenue
-            avec tous les renseignements pratiques.
-          </Reveal>
-        </div>
-
-        <Reveal className="billet" delay={80}>
+        <Reveal className="billet">
           <div className="billet-corps">
             <h3>Rejoins le groupe</h3>
             <p>

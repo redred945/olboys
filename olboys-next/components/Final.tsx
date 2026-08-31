@@ -1,3 +1,4 @@
+import Parquet from "./Parquet";
 import Reveal from "./Reveal";
 
 const LIEN_ADHESION =
@@ -6,6 +7,7 @@ const LIEN_ADHESION =
 export default function Final() {
   return (
     <section className="final">
+      <Parquet variante="jaune" />
       <div className="env">
         <Reveal as="h2">
           Debout,

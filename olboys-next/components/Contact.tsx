@@ -39,22 +39,7 @@ export default function Contact() {
   return (
     <section className="sec sec--bord" id="contact">
       <div className="env">
-        <div className="tete">
-          <div>
-            <Reveal as="p" className="eti">
-              Contact
-            </Reveal>
-            <Reveal as="h2" className="t-xl" delay={80} style={{ marginTop: 20 }}>
-              Écris-nous, on répond.
-            </Reveal>
-          </div>
-          <Reveal as="p" delay={160}>
-            Une question sur l&apos;adhésion, une proposition, une idée de tifo&nbsp;? Le plus simple reste un
-            message sur l&apos;un de nos réseaux.
-          </Reveal>
-        </div>
-
-        <Reveal className="reseaux" delay={80}>
+        <Reveal className="reseaux">
           {RESEAUX.map((r) => (
             <a className="res" href={r.href} target="_blank" rel="noopener" key={r.nom}>
               {r.svg}

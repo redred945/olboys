@@ -16,19 +16,9 @@ export default function Tribune() {
   return (
     <section className="sec sec--bord" id="tribune">
       <div className="env">
-        <div className="tete">
-          <div>
-            <Reveal as="p" className="eti">
-              La tribune
-            </Reveal>
-            <Reveal as="h2" className="t-xl" delay={80} style={{ marginTop: 20 }}>
-              Ça ressemble à ça.
-            </Reveal>
-          </div>
-          <Reveal as="p" delay={160}>
-            Photos prises à CO&apos;Met et en déplacement. Fais glisser pour parcourir.
-          </Reveal>
-        </div>
+        <Reveal as="p" className="mono galerie-note">
+          Photos prises à CO&apos;Met et en déplacement · Fais glisser pour parcourir
+        </Reveal>
 
         <Reveal delay={80} className="galerie" as="div">
           {PHOTOS.map((p, i) => (

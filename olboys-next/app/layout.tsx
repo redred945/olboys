@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
+import Nav from "@/components/Nav";
+import Footer from "@/components/Footer";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "OLBOYS — Supporters de l'Orléans Loiret Basket",
+  title: {
+    default: "OLBOYS — Supporters de l'Orléans Loiret Basket",
+    template: "%s · OLBOYS",
+  },
   description:
     "OLBOYS, groupe de supporters de l'Orléans Loiret Basket depuis 2024. Bloc 101 à CO'Met, tifos, déplacements. Adhésion saison 2026-2027 ouverte.",
 };
@@ -24,7 +29,9 @@ export default function RootLayout({
       </head>
       <body>
         <div className="grain" aria-hidden="true" />
-        {children}
+        <Nav />
+        <main id="haut">{children}</main>
+        <Footer />
       </body>
     </html>
   );

@@ -6,7 +6,7 @@ export default function Boutique() {
       <div className="env">
         <Reveal className="boutique">
           <div className="boutique-txt">
-            <p className="eti">Boutique</p>
+            <p className="eti">Le produit de la saison</p>
             <h3 style={{ marginTop: 20 }}>Tee-shirt 2026-2027</h3>
             <p>
               Un tee-shirt est commandable directement au moment de ton adhésion. Si tu en veux d&apos;autres — pour
