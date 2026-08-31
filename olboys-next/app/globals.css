@@ -145,7 +145,21 @@ h1,h2,h3{ font-family:var(--ban); font-weight:400; text-transform:uppercase; lin
 .tifo b.lev{ transform:rotateX(0deg); opacity:1; }
 .tifo b.on{ background:var(--jaune); }
 .tifo b.vide{ background:var(--nuit-3); }
-.tifo b.eclat{ background:var(--jaune-c); }
+.tifo b.eclat{
+  background:var(--jaune-c);
+  z-index:2;
+  transform-origin:center center;
+  box-shadow:
+    0 0 6px 1px var(--jaune-c),
+    0 0 22px 6px rgba(255,210,46,.55),
+    0 0 46px 14px rgba(255,210,46,.28);
+  animation:scintille .54s var(--out);
+}
+@keyframes scintille{
+  0%   { filter:brightness(1);    transform:scale(1); }
+  30%  { filter:brightness(2.1);  transform:scale(1.42); }
+  100% { filter:brightness(1);    transform:scale(1); }
+}
 
 .voile{
   position:absolute; inset:0; z-index:1; pointer-events:none;

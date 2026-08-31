@@ -44,6 +44,7 @@ export default function Hero() {
   // côté client, pour ne jamais désaccorder le rendu serveur et l'hydratation.
   const [tifo, setTifo] = useState<{ cols: number; lignes: number; cartons: Carton[] } | null>(null);
   const [leves, setLeves] = useState<Set<number>>(new Set());
+  const [eclats, setEclats] = useState<Set<number>>(new Set());
   const zoneRef = useRef<HTMLDivElement>(null);
   const calmeRef = useRef(false);
 
@@ -73,6 +74,42 @@ export default function Hero() {
     if (tifo) lancer(tifo.cartons);
   };
 
+  // Scintillement aléatoire : des cartons s'embrasent par salves, comme des
+  // flashs de portables qui parcourent la tribune. Coupé si l'utilisateur
+  // demande moins d'animations.
+  useEffect(() => {
+    if (!tifo || calmeRef.current) return;
+    const allumes = tifo.cartons.filter((c) => c.classe !== "vide");
+    const lettres = tifo.cartons.filter((c) => c.classe === "on");
+    if (!allumes.length) return;
+
+    const salve = () => {
+      const nb = 4 + Math.floor(Math.random() * 7);
+      const choisis: number[] = [];
+      for (let i = 0; i < nb; i++) {
+        const bassin = Math.random() < 0.62 && lettres.length ? lettres : allumes;
+        const c = bassin[Math.floor(Math.random() * bassin.length)];
+        if (c) choisis.push(c.id);
+      }
+      setEclats((prec) => {
+        const s = new Set(prec);
+        choisis.forEach((id) => s.add(id));
+        return s;
+      });
+      window.setTimeout(() => {
+        setEclats((prec) => {
+          const s = new Set(prec);
+          choisis.forEach((id) => s.delete(id));
+          return s;
+        });
+      }, 540);
+    };
+
+    const boucle = window.setInterval(salve, 230);
+    return () => window.clearInterval(boucle);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tifo]);
+
   // Innovation : la tribune suit le curseur, effet caméra de stade
   function surMouvement(e: React.PointerEvent<HTMLElement>) {
     const zone = zoneRef.current;
@@ -96,7 +133,12 @@ export default function Hero() {
         {tifo && (
           <div className="tifo" style={{ gridTemplateColumns: `repeat(${tifo.cols}, 1fr)` }}>
             {tifo.cartons.map((c) => (
-              <b key={c.id} className={`${c.classe} ${leves.has(c.id) ? "lev" : ""}`.trim()} />
+              <b
+                key={c.id}
+                className={[c.classe, leves.has(c.id) && "lev", eclats.has(c.id) && "eclat"]
+                  .filter(Boolean)
+                  .join(" ")}
+              />
             ))}
           </div>
         )}
