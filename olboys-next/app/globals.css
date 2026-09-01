@@ -151,20 +151,30 @@ h1,h2,h3{ font-family:var(--ban); font-weight:400; text-transform:uppercase; lin
   background:var(--grenat);
   transform:rotateX(88deg); transform-origin:center bottom;
   opacity:.55;
-  transition:transform .55s var(--out), background-color .3s var(--out), opacity .55s;
+  transition:transform .55s var(--out), background-color .45s var(--out), opacity .55s;
 }
 /* La vague de levée est portée par un retard par carton : un seul rendu,
-   et le téléphone n'a que des transitions composées à jouer. */
+   et le téléphone n'a que des transitions composées à jouer. Le même retard
+   fait ensuite dérouler les changements de motif en vague. */
 .tifo.leve b{
-  transform:rotateX(0deg); opacity:1;
+  transform:rotateX(0deg);
+  opacity:var(--prof,1);
   transition-delay:var(--retard,0ms);
 }
-.tifo b.on{ background:var(--jaune); position:relative; z-index:1; }
 .tifo b.vide{ background:var(--nuit-3); }
 
-/* Scintillement : uniquement les lettres O·L·B, en or, chacune sur sa
-   propre phase — l'ensemble ne se répète jamais à l'œil. */
-.tifo.leve b.on{
+/* Le mur bascule d'un motif à l'autre : chaque carton sait auxquels il
+   appartient, seul l'attribut du conteneur change. */
+.tifo[data-motif="0"] b.m0,
+.tifo[data-motif="1"] b.m1,
+.tifo[data-motif="2"] b.m2{
+  background:var(--jaune); position:relative; z-index:1;
+}
+
+/* Scintillement or, réservé aux cartons allumés du motif en cours */
+.tifo.leve[data-motif="0"] b.m0,
+.tifo.leve[data-motif="1"] b.m1,
+.tifo.leve[data-motif="2"] b.m2{
   animation:scintille var(--sc-duree,3.4s) ease-in-out var(--sc-retard,1.6s) infinite;
 }
 @keyframes scintille{
@@ -181,6 +191,45 @@ h1,h2,h3{ font-family:var(--ban); font-weight:400; text-transform:uppercase; lin
       0 0 34px 10px rgba(230,166,18,.28);
     transform:scale(1.3);
   }
+}
+
+/* L'ola : une bande de lumière traverse le mur en boucle. Un seul calque
+   qui se translate — le GPU s'en charge, rien à repeindre. */
+.ola{
+  position:absolute; top:-15%; left:-55%; width:55%; height:130%;
+  z-index:2; pointer-events:none;
+  background:linear-gradient(102deg,
+    transparent 0%,
+    rgba(255,226,140,.05) 22%,
+    rgba(255,235,170,.16) 40%,
+    rgba(255,244,200,.30) 50%,
+    rgba(255,235,170,.16) 60%,
+    rgba(255,226,140,.05) 78%,
+    transparent 100%);
+  will-change:transform;
+  animation:ola 7.5s linear infinite;
+}
+@keyframes ola{ from{ transform:translate3d(0,0,0); } to{ transform:translate3d(290%,0,0); } }
+
+/* La poursuite : le halo suit le curseur, et balaie tout seul au doigt */
+.poursuite{
+  position:absolute; left:50%; top:46%;
+  width:min(560px,58%); aspect-ratio:1;
+  translate:-50% -50%;
+  z-index:1; pointer-events:none;
+  background:radial-gradient(closest-side circle,
+    rgba(255,232,155,.30), rgba(255,214,70,.13) 40%, rgba(255,210,46,.05) 60%, transparent 76%);
+  transform:translate3d(var(--dx,0px), var(--dy,0px), 0);
+  transition:transform .4s var(--out), opacity .55s var(--out);
+  opacity:0; will-change:transform;
+}
+.heros:hover .poursuite{ opacity:1; }
+@media (hover:none){
+  .poursuite{ opacity:.66; animation:balaye 12s ease-in-out infinite alternate; }
+}
+@keyframes balaye{
+  from{ transform:translate3d(-24vw,0,0); }
+  to{ transform:translate3d(24vw,0,0); }
 }
 
 .voile{
@@ -670,7 +719,8 @@ h1,h2,h3{ font-family:var(--ban); font-weight:400; text-transform:uppercase; lin
   html{ scroll-behavior:auto; }
   .rev{ opacity:1; transform:none; }
   .tifo b,.tifo.leve b{ transform:none; opacity:1; }
-  .tifo.leve b.on{ animation:none; background-color:var(--jaune); }
+  .tifo.leve b[class*="m"]{ animation:none; background-color:var(--jaune); }
+  .ola,.poursuite{ display:none; }
   .rejouer{ display:none; }
   .parquet .terrain > *{ stroke-dashoffset:0; }
   .led{ opacity:1; }
