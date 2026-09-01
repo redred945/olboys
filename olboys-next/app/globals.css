@@ -293,8 +293,13 @@ h1,h2,h3{ font-family:var(--ban); font-weight:400; text-transform:uppercase; lin
 /* ── Adhésion : le billet ── */
 .billet{
   display:grid; grid-template-columns:1.35fr .65fr;
-  background:var(--jaune); color:var(--nuit);
+  color:var(--nuit);
   position:relative; overflow:hidden;
+  /* Les deux encoches rondes du ticket, découpées à l'aplomb du pointillé */
+  background:
+    radial-gradient(circle at 65% 0, var(--nuit) 14px, transparent 14.5px),
+    radial-gradient(circle at 65% 100%, var(--nuit) 14px, transparent 14.5px),
+    var(--jaune);
 }
 .billet::after{
   content:""; position:absolute; top:0; bottom:0; left:65%;
@@ -310,6 +315,18 @@ h1,h2,h3{ font-family:var(--ban); font-weight:400; text-transform:uppercase; lin
 }
 .billet-souche .mono{ color:rgba(12,10,10,.6); }
 .billet-souche b{ display:block; font-family:var(--ban); font-size:clamp(28px,3.4vw,46px); line-height:.95; margin-top:6px; }
+/* Le code-barres de la souche */
+.billet-code{ margin-top:4px; }
+.billet-code i{
+  display:block; height:46px;
+  background:repeating-linear-gradient(90deg,
+    var(--nuit) 0 2px, transparent 2px 5px,
+    var(--nuit) 5px 8px, transparent 8px 10px,
+    var(--nuit) 10px 11px, transparent 11px 15px,
+    var(--nuit) 15px 18px, transparent 18px 20px);
+  opacity:.82;
+}
+.billet-code .mono{ display:block; margin-top:8px; font-size:9px; letter-spacing:.22em; color:rgba(12,10,10,.55); }
 .billet .btn{ background:var(--nuit); color:var(--jaune); }
 .billet .btn::before{ background:var(--grenat); }
 .billet .btn:hover{ color:var(--os); }
@@ -362,6 +379,15 @@ h1,h2,h3{ font-family:var(--ban); font-weight:400; text-transform:uppercase; lin
   transition:transform .55s var(--out);
 }
 .av:hover::after{ transform:scaleX(1); }
+/* Le numéro floqué au dos du maillot, en filigrane derrière la carte */
+.av-maillot{
+  position:absolute; z-index:0; right:-14px; top:-26px; pointer-events:none;
+  font-family:var(--ban); font-size:clamp(120px,13vw,200px); line-height:.78;
+  color:var(--nuit-2); letter-spacing:-.03em;
+  transition:color .5s var(--out), transform .6s var(--out);
+}
+.av:hover .av-maillot{ color:rgba(122,18,38,.42); transform:translateY(-8px); }
+.av > *:not(.av-maillot){ position:relative; z-index:1; }
 .av-num{ font-family:var(--data); font-size:11px; font-weight:500; letter-spacing:.2em; color:var(--jaune); }
 .av h3{ font-size:clamp(21px,2.2vw,29px); margin:16px 0 14px; }
 .av p{ color:#B0A79F; font-size:15px; }
@@ -445,28 +471,65 @@ h1,h2,h3{ font-family:var(--ban); font-weight:400; text-transform:uppercase; lin
   12%,36%,60%,100%{ opacity:0; }
 }
 
-/* ── Galerie ── */
-.galerie{
-  display:flex; gap:14px; overflow-x:auto; padding-bottom:18px;
-  scroll-snap-type:x mandatory; scrollbar-width:thin;
-  scrollbar-color:var(--grenat-c) var(--nuit-2);
-}
-.galerie::-webkit-scrollbar{ height:6px; }
-.galerie::-webkit-scrollbar-track{ background:var(--nuit-2); }
-.galerie::-webkit-scrollbar-thumb{ background:var(--grenat-c); }
-.galerie figure{
-  flex:none; width:clamp(240px,34vw,420px); aspect-ratio:4/3;
-  scroll-snap-align:start; overflow:hidden; background:var(--nuit-3);
-  position:relative;
-}
-.galerie img{ width:100%; height:100%; object-fit:cover; display:block; transition:transform .8s var(--out); }
-.galerie figure:hover img{ transform:scale(1.05); }
-.galerie figure::after{
-  content:attr(data-n); position:absolute; left:12px; bottom:10px;
-  font-family:var(--data); font-size:10px; letter-spacing:.16em;
-  color:var(--os); background:rgba(12,10,10,.65); padding:4px 8px;
-}
+/* ── Galerie : mosaïque de mur de tribune ── */
 .galerie-note{ margin-bottom:24px; }
+.mosaique{
+  display:grid; grid-template-columns:repeat(4,1fr);
+  grid-auto-rows:clamp(118px,12.5vw,188px);
+  grid-auto-flow:dense; gap:clamp(8px,1vw,14px);
+}
+.mos{ position:relative; overflow:hidden; background:var(--nuit-3); }
+.mos.grande{ grid-column:span 2; grid-row:span 2; }
+.mos.large{ grid-column:span 2; }
+.mos button{
+  display:block; position:absolute; inset:0; padding:0;
+  border:0; background:none; cursor:zoom-in;
+}
+.mos img{ transition:transform .8s var(--out), filter .5s var(--out); }
+.mos button:hover img{ transform:scale(1.06); }
+.mos button::after{
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(to top, rgba(12,10,10,.6), transparent 46%);
+  opacity:.75; transition:opacity .45s var(--out);
+}
+.mos button:hover::after{ opacity:.35; }
+.mos-n{
+  position:absolute; left:11px; bottom:9px; z-index:2;
+  font-family:var(--data); font-size:10px; letter-spacing:.16em;
+  color:var(--os); background:rgba(12,10,10,.7); padding:4px 8px;
+}
+.mos button:hover .mos-n{ background:var(--jaune); color:var(--nuit); }
+
+/* ── Visionneuse plein écran ── */
+.visio{ position:fixed; inset:0; z-index:900; display:grid; place-items:center; animation:visio-ouvre .3s var(--out); }
+@keyframes visio-ouvre{ from{ opacity:0; } to{ opacity:1; } }
+.visio-fond{
+  position:absolute; inset:0; border:0; padding:0; cursor:zoom-out;
+  background:rgba(6,5,5,.94); backdrop-filter:blur(6px);
+}
+.visio-cadre{
+  position:relative; z-index:1;
+  width:min(92vw,1240px); height:min(78vh,820px);
+  animation:visio-monte .45s var(--out);
+}
+@keyframes visio-monte{ from{ transform:scale(.965); opacity:0; } to{ transform:none; opacity:1; } }
+.visio-legende{
+  position:absolute; z-index:1; left:0; right:0; bottom:clamp(18px,4vh,42px);
+  text-align:center; color:#B6ADA6; padding:0 var(--marge);
+}
+.visio-legende b{ color:var(--jaune); font-weight:500; }
+.visio-btn{
+  position:absolute; z-index:2; cursor:pointer;
+  width:52px; height:52px; flex:none;
+  display:grid; place-items:center;
+  background:rgba(12,10,10,.65); color:var(--os);
+  border:1px solid var(--ligne); font-size:19px; line-height:1;
+  transition:background .3s var(--out), color .3s var(--out), border-color .3s;
+}
+.visio-btn:hover{ background:var(--jaune); color:var(--nuit); border-color:var(--jaune); }
+.visio-prec{ left:clamp(10px,2.5vw,34px); top:50%; transform:translateY(-50%); }
+.visio-suiv{ right:clamp(10px,2.5vw,34px); top:50%; transform:translateY(-50%); }
+.visio-fermer{ top:clamp(14px,3vh,30px); right:clamp(10px,2.5vw,34px); }
 
 /* ── Boutique ── */
 .boutique{ display:grid; grid-template-columns:1fr 1fr; gap:0; border:1px solid var(--ligne); }
@@ -505,8 +568,21 @@ h1,h2,h3{ font-family:var(--ban); font-weight:400; text-transform:uppercase; lin
 .final .btn:hover{ color:var(--os); }
 
 /* ── Pied ── */
-.pied{ padding:44px 0 36px; border-top:1px solid var(--ligne); background:var(--nuit-2); }
-.pied .env{ display:flex; flex-wrap:wrap; gap:24px; justify-content:space-between; align-items:center; }
+.pied{
+  position:relative; overflow:hidden;
+  padding:44px 0 36px; border-top:1px solid var(--ligne); background:var(--nuit-2);
+}
+/* Grande banderole OLBOYS en filigrane, repliée en bas de page */
+.pied::before{
+  content:"OLBOYS"; position:absolute; left:50%; bottom:-.22em;
+  transform:translateX(-50%); pointer-events:none; white-space:nowrap;
+  font-family:var(--ban); font-size:clamp(96px,23vw,320px); line-height:.8;
+  letter-spacing:.01em; color:rgba(245,241,232,.03);
+}
+.pied .env{
+  position:relative; z-index:1;
+  display:flex; flex-wrap:wrap; gap:24px; justify-content:space-between; align-items:center;
+}
 .pied a{ color:#B6ADA6; text-decoration:none; }
 .pied a:hover{ color:var(--jaune); }
 .pied-liens{ display:flex; flex-wrap:wrap; gap:4px 22px; }
@@ -531,6 +607,9 @@ h1,h2,h3{ font-family:var(--ban); font-weight:400; text-transform:uppercase; lin
   .billet-souche{ border-top:3px dashed rgba(12,10,10,.35); }
   .boutique-visu{ border-left:0; border-top:1px solid var(--ligne); }
   .tifo-zone{ width:150%; }
+  .mosaique{ grid-template-columns:repeat(3,1fr); }
+  /* Sur ces largeurs, l'encoche du billet tomberait n'importe où */
+  .billet{ background:var(--jaune); }
 }
 @media (max-width:860px){
   .nav-liens{
@@ -546,6 +625,13 @@ h1,h2,h3{ font-family:var(--ban); font-weight:400; text-transform:uppercase; lin
   .burger{ display:block; }
   .heros-actions{ margin-left:0; width:100%; }
   .reseaux{ grid-template-columns:1fr; }
+  .mosaique{ grid-template-columns:repeat(2,1fr); grid-auto-rows:clamp(104px,26vw,152px); }
+  .mos.grande,.mos.large{ grid-column:span 2; }
+  .mos.grande{ grid-row:span 2; }
+  .visio-btn{ width:46px; height:46px; }
+  .visio-prec{ top:auto; bottom:16px; left:24%; transform:none; }
+  .visio-suiv{ top:auto; bottom:16px; right:24%; transform:none; }
+  .visio-legende{ bottom:82px; }
 }
 @media (max-width:560px){
   .avantages{ grid-template-columns:1fr; }
