@@ -406,11 +406,11 @@ h1,h2,h3{ font-family:var(--ban); font-weight:400; text-transform:uppercase; lin
     0 34px 80px -34px #000,
     inset 0 0 70px rgba(0,0,0,.95);
 }
-/* Trame de diodes par-dessus tout le panneau */
+/* Reflet du plexiglas. Rien d'autre ne passe au-dessus du texte : une trame
+   posée par-dessus perce aussi les chiffres et les rend illisibles. */
 .tableau::after{
   content:""; position:absolute; inset:0; z-index:3; pointer-events:none;
-  background-image:radial-gradient(circle at center, transparent 36%, #050404 44%);
-  background-size:4px 4px; opacity:.5;
+  background:linear-gradient(168deg, rgba(255,255,255,.05) 0%, transparent 30%);
 }
 .tableau-barre{
   display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
@@ -423,9 +423,9 @@ h1,h2,h3{ font-family:var(--ban); font-weight:400; text-transform:uppercase; lin
   font-family:var(--data); font-size:10.5px; font-weight:500;
   letter-spacing:.2em; text-transform:uppercase;
 }
-.tableau-id{ color:rgba(245,241,232,.62); }
+.tableau-id{ color:rgba(245,241,232,.78); }
 .tableau-id i{ font-style:normal; color:var(--grenat-c); }
-.tableau-etat{ color:rgba(255,210,46,.62); }
+.tableau-etat{ color:rgba(255,210,46,.85); }
 .led{
   width:8px; height:8px; border-radius:50%; flex:none;
   background:#FF3B30; box-shadow:0 0 9px #FF3B30;
@@ -434,10 +434,17 @@ h1,h2,h3{ font-family:var(--ban); font-weight:400; text-transform:uppercase; lin
 @keyframes clignote{ 0%,58%{ opacity:1; } 59%,100%{ opacity:.14; } }
 
 .chiffres{ display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:rgba(245,241,232,.09); }
-.ch{ position:relative; background:#0A0808; padding:clamp(22px,2.9vw,40px) clamp(13px,1.9vw,26px); }
+/* La trame de diodes est un fond, pas un calque : elle donne sa texture au
+   panneau sans manger les chiffres ni les libellés posés dessus. */
+.ch{
+  position:relative; padding:clamp(22px,2.9vw,40px) clamp(13px,1.9vw,26px);
+  background-color:#0A0808;
+  background-image:radial-gradient(circle at center, rgba(255,224,130,.09) 0 1.2px, transparent 1.7px);
+  background-size:4px 4px;
+}
 .ch-tag{
-  display:block; font-family:var(--data); font-size:9.5px; font-weight:500;
-  letter-spacing:.24em; text-transform:uppercase; color:rgba(255,210,46,.46);
+  display:block; font-family:var(--data); font-size:10px; font-weight:500;
+  letter-spacing:.24em; text-transform:uppercase; color:rgba(255,210,46,.8);
 }
 .ch-val{
   position:relative; display:block; margin-top:14px;
@@ -445,20 +452,20 @@ h1,h2,h3{ font-family:var(--ban); font-weight:400; text-transform:uppercase; lin
   font-size:clamp(40px,5.6vw,78px); letter-spacing:.03em;
   font-variant-numeric:tabular-nums;
 }
-/* Les segments éteints restent faiblement visibles, comme sur un vrai panneau */
-.ch-eteint{ color:rgba(255,210,46,.075); }
+/* Les segments éteints restent devinables, comme sur un vrai panneau */
+.ch-eteint{ color:rgba(255,210,46,.06); }
 .ch-allume{
-  position:absolute; left:0; top:0; color:var(--jaune);
-  text-shadow:0 0 11px rgba(255,210,46,.7), 0 0 36px rgba(255,168,20,.4);
+  position:absolute; left:0; top:0; color:#FFE066;
+  text-shadow:0 0 4px rgba(255,196,20,.5), 0 0 17px rgba(255,168,20,.28);
 }
 .ch-val em{
   font-style:normal; font-size:.44em; margin-left:.14em; vertical-align:top;
-  color:rgba(255,210,46,.78); text-shadow:0 0 10px rgba(255,210,46,.45);
+  color:rgba(255,210,46,.9); text-shadow:0 0 6px rgba(255,210,46,.38);
 }
 .ch-label{
   display:block; margin-top:18px; max-width:22ch;
-  font-family:var(--data); font-size:10px; letter-spacing:.15em;
-  text-transform:uppercase; color:rgba(245,241,232,.46);
+  font-family:var(--data); font-size:10.5px; letter-spacing:.15em;
+  text-transform:uppercase; color:rgba(245,241,232,.76);
 }
 /* Buzzer de fin de période : le panneau clignote quand le compteur se fige */
 .ch--buzz::before{
