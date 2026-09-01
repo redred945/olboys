@@ -1,15 +1,16 @@
-import type { Metadata } from "next";
+import { metaPage } from "@/components/meta";
 import EntetePage from "@/components/EntetePage";
 import Adhesion from "@/components/Adhesion";
 import CarteMembre from "@/components/CarteMembre";
 import Avantages from "@/components/Avantages";
 import Final from "@/components/Final";
 
-export const metadata: Metadata = {
-  title: "Adhérer",
+export const metadata = metaPage({
+  titre: "Adhérer",
   description:
     "Adhésion OLBOYS saison 2026-2027 : tarif préférentiel sur l'abonnement et les billets, 4 rangs réservés bloc 101, déplacements et boutique à prix adhérent.",
-};
+  chemin: "/adherer",
+});
 
 export default function Adherer() {
   return (

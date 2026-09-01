@@ -40,6 +40,11 @@ export default function Adhesion() {
                 <br />à l&apos;adhésion
               </b>
             </div>
+
+            <div className="billet-code" aria-hidden="true">
+              <i />
+              <span className="mono">OLBOYS · 2026-2027 · BLOC 101</span>
+            </div>
           </div>
         </Reveal>
       </div>
