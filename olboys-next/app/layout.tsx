@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     siteName: "OLBOYS",
     title: "OLBOYS — Supporters de l'Orléans Loiret Basket",
     description: DESCRIPTION,
-    url: SITE,
+    url: "/",
   },
   twitter: {
     card: "summary_large_image",
