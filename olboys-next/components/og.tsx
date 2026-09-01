@@ -103,9 +103,23 @@ export async function carteOG({ eti, lignes }: { eti: string; lignes: string[] }
             justifyContent: "center",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", marginBottom: 26 }}>
+          {/* la marque, pour que la carte se reconnaisse d'un coup d'œil */}
+          <div style={{ display: "flex", alignItems: "center", marginBottom: 30 }}>
+            <svg width="54" height="54" viewBox="0 0 40 40" style={{ marginRight: 15 }}>
+              <circle cx="20" cy="20" r="19" fill={JAUNE} />
+              <g fill="none" stroke={GRENAT} strokeWidth={2.4}>
+                <circle cx="20" cy="20" r="19" />
+                <path d="M20 1 V39 M1 20 H39 M6 6 C 16 15, 16 25, 6 34 M34 6 C 24 15, 24 25, 34 34" />
+              </g>
+            </svg>
+            <div style={{ fontFamily: "Anton", fontSize: 44, color: OS, textTransform: "uppercase", letterSpacing: 1 }}>
+              OLBOYS
+            </div>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", marginBottom: 24 }}>
             <div style={{ width: 34, height: 5, background: JAUNE, marginRight: 14 }} />
-            <div style={{ fontSize: 21, color: JAUNE, letterSpacing: 3, textTransform: "uppercase" }}>{eti}</div>
+            <div style={{ fontSize: 20, color: JAUNE, letterSpacing: 3, textTransform: "uppercase" }}>{eti}</div>
           </div>
 
           <div style={{ display: "flex", flexDirection: "column" }}>
@@ -114,7 +128,7 @@ export async function carteOG({ eti, lignes }: { eti: string; lignes: string[] }
                 key={i}
                 style={{
                   fontFamily: "Anton",
-                  fontSize: 88,
+                  fontSize: 78,
                   lineHeight: 0.94,
                   textTransform: "uppercase",
                   color: i === lignes.length - 1 ? JAUNE : OS,
