@@ -536,11 +536,28 @@ h1,h2,h3{ font-family:var(--ban); font-weight:400; text-transform:uppercase; lin
 .boutique-txt{ padding:clamp(28px,3.6vw,52px); }
 .boutique-txt h3{ font-size:clamp(26px,3.4vw,46px); margin-bottom:16px; }
 .boutique-txt p{ color:#B0A79F; margin-bottom:26px; max-width:42ch; }
-.boutique-visu{
-  background:var(--grenat); display:grid; place-items:center; padding:40px;
-  border-left:1px solid var(--ligne);
+.boutique-liste{ list-style:none; margin:-8px 0 26px; }
+.boutique-liste li{
+  display:flex; gap:12px; padding:9px 0; font-size:14.5px; color:#B0A79F;
+  border-top:1px solid var(--ligne);
 }
-.boutique-visu svg{ width:min(230px,70%); height:auto; }
+.boutique-liste li::before{ content:""; width:5px; height:5px; margin-top:8px; flex:none; background:var(--jaune); }
+
+/* Le tee posé dans la lumière du vestiaire */
+.boutique-visu{
+  position:relative; overflow:hidden;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px;
+  padding:clamp(30px,4vw,54px) clamp(16px,2.5vw,34px);
+  border-left:1px solid var(--ligne);
+  background:
+    radial-gradient(112% 88% at 50% 20%, rgba(255,210,46,.17), transparent 62%),
+    linear-gradient(160deg, var(--grenat) 0%, #5E0E1D 58%, var(--nuit-3) 100%);
+}
+.boutique-visu svg{
+  width:min(430px,100%); height:auto;
+  filter:drop-shadow(0 24px 32px rgba(0,0,0,.5));
+}
+.boutique-faces{ color:rgba(245,241,232,.6); font-size:10px; letter-spacing:.2em; }
 
 /* ── Réseaux / contact ── */
 .reseaux{ display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--ligne); border:1px solid var(--ligne); }
